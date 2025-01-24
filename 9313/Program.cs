@@ -8,31 +8,46 @@ namespace _9313
 {
     internal class Program
     {
+        //student code start
+
+
+
+
+
+
+        //student code end
         static void Main(string[] args)
         {
-            Queue<int> q = Arr2Q<int>(new int[] { 1, 2, 3, 6, 10 });
-            int next = NextPerfect(q,0);
-            Console.WriteLine(next);
-            next = NextPerfect(q, next);
-            Console.WriteLine(next);
-            next = NextPerfect(q, next);
-            Console.WriteLine(next);
-            Console.WriteLine(PerfectQ(q));
+            // Test 1: General case
+            Queue<int> q1 = Arr2Q<int>(new int[] { 1, 2, 3, 6, 10 });
+            RunTest("Test 1.1 - NextPerfect(q1, 0)", NextPerfect(q1, 0), 3);
+            RunTest("Test 1.2 - NextPerfect(q1, 3)", NextPerfect(q1, 3), 6);
+            RunTest("Test 1.3 - NextPerfect(q1, 6)", NextPerfect(q1, 6), -1);
+            RunQueueTest("Test 1.4 - PerfectQ(q1)", PerfectQ(q1), new int[] { 3, 6 });
 
-            //Console.WriteLine(SumPerfect(q));
+            // Test 2: No perfect numbers
+            Queue<int> q2 = Arr2Q<int>(new int[] { 1, 2, 4, 8 });
+            RunTest("Test 2.1 - NextPerfect(q2, 0)", NextPerfect(q2, 0), -1);
+            RunQueueTest("Test 2.2 - PerfectQ(q2)", PerfectQ(q2), new int[] { });
 
-            /*
-            Queue<int> q = Arr2Q<int>(new int[] { 1,2,3,6,10});
-            NextPerfectVoid(q);
-            Console.WriteLine(q);
+            // Test 3: Single perfect number
+            Queue<int> q3 = Arr2Q<int>(new int[] { 1, 2, 3 });
+            RunTest("Test 3.1 - NextPerfect(q3, 0)", NextPerfect(q3, 0), 3);
+            RunQueueTest("Test 3.2 - PerfectQ(q3)", PerfectQ(q3), new int[] { 3 });
 
+            // Test 4: Empty queue
+            Queue<int> q4 = Arr2Q<int>(new int[] { });
+            //RunTest("Test 4.1 - NextPerfect(q4, 0)", NextPerfect(q4, 0), -1);
+            //RunQueueTest("Test 4.2 - PerfectQ(q4)", PerfectQ(q4), new int[] { });
 
-            q = Arr2Q<int>(new int[] { 1, 2, 7, 6, 10 });
-            NextPerfectVoid(q);
-            Console.WriteLine(q);
-            */
+            // Test 5: Queue with multiple identical perfect numbers
+            Queue<int> q5 = Arr2Q<int>(new int[] { 1, 2, 3, 3, 6, 10 });
+            RunTest("Test 5.1 - NextPerfect(q5, 0)", NextPerfect(q5, 0), 3);
+            RunTest("Test 5.2 - NextPerfect(q5, 3)", NextPerfect(q5, 3), 6);
+            RunQueueTest("Test 5.3 - PerfectQ(q5)", PerfectQ(q5), new int[] { 3, 6 });
         }
 
+        // Helper method to convert an array to a queue
         static Queue<T> Arr2Q<T>(T[] arr)
         {
             Queue<T> q = new Queue<T>();
@@ -41,7 +56,61 @@ namespace _9313
             return q;
         }
 
-        static int NextPerfect(Queue<int> q, int lastPerfect)
+        // Helper method to test single integer return values
+        static void RunTest(string testName, int actual, int expected)
+        {
+            if (actual == expected)
+            {
+                Console.WriteLine($"{testName}: PASSED");
+            }
+            else
+            {
+                Console.WriteLine($"{testName}: FAILED (Expected: {expected}, Actual: {actual})");
+            }
+        }
+
+        // Helper method to test queue outputs
+        static void RunQueueTest(string testName, Queue<int> actual, int[] expectedArr)
+        {
+            Queue<int> expected = Arr2Q<int>(expectedArr);
+            if (AreQueuesEqual(actual, expected))
+            {
+                Console.WriteLine($"{testName}: PASSED");
+            }
+            else
+            {
+                Console.WriteLine($"{testName}: FAILED (Expected: {QueueToString(expected)}, Actual: {QueueToString(actual)})");
+            }
+        }
+
+        // Helper method to compare two queues
+        static bool AreQueuesEqual(Queue<int> q1, Queue<int> q2)
+        {
+            while (!q1.IsEmpty() && !q2.IsEmpty())
+            {
+                if (q1.Remove() != q2.Remove())
+                    return false;
+            }
+            return q1.IsEmpty() && q2.IsEmpty();
+        }
+
+        // Helper method to convert a queue to a string for comparison
+        static string QueueToString(Queue<int> q)
+        {
+            Queue<int> temp = new Queue<int>();
+            string result = "QueueHead[";
+            while (!q.IsEmpty())
+            {
+                int current = q.Remove();
+                temp.Insert(current);
+                result += current + ",";
+            }
+            while (!temp.IsEmpty())
+                q.Insert(temp.Remove());
+            return result.TrimEnd(',') + "]";
+        }
+
+        static int NextPerfectGideon(Queue<int> q, int lastPerfect)
         {
             int sum = 0; // sum of numbers till here
             int nextPerfect = -1; // default value. will change if we find a next perfect
@@ -66,7 +135,7 @@ namespace _9313
             return nextPerfect; // Return the next perfect number found, or -1 if none
         }
 
-        static Queue<int> PerfectQ(Queue<int> q)
+        static Queue<int> PerfectQGideon(Queue<int> q)
         {
             Queue<int> ret = new Queue<int>();
             int lastPerfect = 0; //start with 0
@@ -81,82 +150,7 @@ namespace _9313
             return ret;
         }
 
-        static int SumPerfect(Queue<int> q)
-        {
-            int sum = 0; // To accumulate the sum of perfect numbers
-            int lastPerfect = -1; // Start with an invalid perfect number
-            int nextPerfect = NextPerfect(q, lastPerfect); // Find the first perfect number
 
-            while (nextPerfect != -1) // Continue as long as a perfect number is found
-            {
-                sum += nextPerfect; // Add the perfect number to the sum
-                lastPerfect = nextPerfect; // Update the last perfect number
-                nextPerfect = NextPerfect(q, lastPerfect); // Find the next perfect number
-            }
-
-            return sum; // Return the total sum of perfect numbers
-        }
-
-
-
-        //remove numbers from q until (not including) the first perfect number. if no perfect number in q, q will be empty after calling
-        //example1: before: queuehead->[1,2,3,6,10], after: queuehead->[3,6,10]
-        //example2: before: queuehead->[1,2,7,6,10], after: queuehead->[]
-
-
-        static void NextPerfectVoid(Queue<int> q)
-        {
-            int sum = 0;
-            while (!q.IsEmpty() && sum != q.Head())
-                sum += q.Remove();
-        }
-
-
-
-
-
-        public static void NextPerfectOran(Queue<int> q)
-        {
-            int sum = 0;
-            if (!q.IsEmpty())
-                sum = (q.Remove() * 2);
-            while (!q.IsEmpty() && sum != q.Head())
-            {
-                sum += q.Remove();
-            }
-        }
-
-
-        //return true if a number in index m is the sum of all preceeding numbers in the Queue q
-        static bool IsPerfectIndex(Queue<int> q, int m) 
-        {
-            if (m <= 1) return false; // invalid m
-
-            Queue<int> tmp = new Queue<int>();
-            int sumBefore = 0;
-            bool isPerfect = false;
-            int index = 1; // Track the current position in the queue
-
-            while (!q.IsEmpty())
-            {
-                int value = q.Remove();
-
-                if (index < m)
-                    sumBefore += value; // Add to the sum before the m-th element
-                else if (index == m)
-                    isPerfect = (value == sumBefore); // Check m-th element
-
-                tmp.Insert(value);
-                index++;
-            }
-
-            // Restore the original queue
-            while (!tmp.IsEmpty())
-                q.Insert(tmp.Remove());
-
-            // If m > q size, isPerfect = false
-            return isPerfect;
-        }
 
 
 
